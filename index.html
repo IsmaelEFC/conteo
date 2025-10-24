@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Confirmaciones Evento</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Feather Icons -->
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <!-- Manifest -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1a56db" />
+
+  <style>
+    :root {
+      --primary: #1a56db;
+      --primary-light: #3b82f6;
+      --success: #10b981;
+      --danger: #ef4444;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius: 12px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+      color: var(--gray-800);
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1.5rem 0;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .subtitle {
+      color: var(--gray-600);
+      font-size: 1.1rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      transition: transform 0.2s ease;
+    }
+
+    .stat-card:hover { transform: translateY(-4px); }
+
+    .stat-icon {
+      width: 60px; height: 60px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin-right: 1rem; font-size: 1.8rem; color: white;
+    }
+
+    .confirmed .stat-icon { background: var(--primary); }
+    .guests .stat-icon { background: var(--success); }
+
+    .stat-content h3 {
+      font-size: 2.2rem; font-weight: 700; color: var(--gray-900);
+    }
+
+    .stat-content p { color: var(--gray-600); font-size: 0.95rem; margin-top: 0.25rem; }
+
+    .charts-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .chart-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .chart-card h3 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      color: var(--gray-800);
+      text-align: center;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+
+    .search-box, .date-filter {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: 1rem;
+      min-width: 200px;
+    }
+
+    .btn-refresh {
+      padding: 0.75rem 1.5rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-refresh:hover { background: var(--primary-light); }
+
+    .table-container {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: var(--gray-100);
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--gray-800);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    th:hover { background: var(--gray-200); }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    tr:hover {
+      background: #f8faff;
+    }
+
+    .invitados-badge {
+      background: var(--success);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .mensaje {
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: help;
+    }
+
+    .mensaje:hover {
+      white-space: normal;
+      overflow: visible;
+      background: #f0f9ff;
+      padding: 0.5rem;
+      border-radius: 6px;
+    }
+
+    .update-info {
+      text-align: center;
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .charts-container { grid-template-columns: 1fr; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .search-box, .date-filter { width: 100%; }
+      table { font-size: 0.9rem; }
+      th, td { padding: 0.75rem 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Confirmaciones del Evento</h1>
+      <p class="subtitle">Seguimiento completo de asistencias e invitados</p>
+    </header>
+
+    <!-- Estadísticas -->
+    <div class="stats-grid">
+      <div class="stat-card confirmed">
+        <div class="stat-icon"><i data-feather="check-circle"></i></div>
+        <div class="stat-content">
+          <h3 id="confirmados">0</h3>
+          <p>Confirmados</p>
+        </div>
+      </div>
+      <div class="stat-card guests">
+        <div class="stat-icon"><i data-feather="users"></i></div>
+        <div class="stat-content">
+          <h3 id="invitados">0</h3>
+          <p>Total de Invitados</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-container">
+      <div class="chart-card">
+        <h3>Resumen Visual</h3>
+        <canvas id="doughnutChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Proporción</h3>
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Controles -->
+    <div class="controls">
+      <input type="text" id="searchInput" class="search-box" placeholder="Buscar por nombre o teléfono..." />
+      <input type="date" id="dateFilter" class="date-filter" />
+      <button class="btn-refresh" onclick="actualizarDatos()">
+        <i data-feather="refresh-cw"></i> Actualizar
+      </button>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-container">
+      <table id="registrosTable">
+        <thead>
+          <tr>
+            <th onclick="sortTable(0)">Fecha y Hora ↓</th>
+            <th onclick="sortTable(1)">Nombre</th>
+            <th onclick="sortTable(2)">Teléfono</th>
+            <th onclick="sortTable(3)">Invitados</th>
+            <th>Mensaje</th>
+          </tr>
+        </thead>
+        <tbody id="tablaBody"></tbody>
+      </table>
+    </div>
+
+    <p class="update-info">Última actualización: <span id="lastUpdate">—</span></p>
+  </div>
+
+  <script src="app.js"></script>
+  <script>feather.replace();</script>
+</body>
+</html>
