@@ -1,4 +1,4 @@
-const API_URL = 'https://script.google.com/macros/s/TU_ID_AQUI/exec'; // ← REEMPLAZA
+const API_URL = 'https://script.google.com/macros/s/AKfycbxgQzAXOHVBYxBbCjZn7YBnO9FmVDMFtwIlcp2P6GIEtSeQPuKW7B7ntMhftVVNM3E/exec'; // ← REEMPLAZA
 
 let doughnutChart, barChart;
 let registros = [];
