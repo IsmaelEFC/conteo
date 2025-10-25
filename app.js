@@ -51,15 +51,21 @@ function renderTabla() {
     });
   }
 
-  tbody.innerHTML = filtered.map(row => `
-    <tr>
-      <td>${row[0]}</td>
-      <td><strong>${row[1]}</strong></td>
-      <td>${row[2]}</td>
-      <td><span class="invitados-badge">${row[3]}</span></td>
-      <td class="mensaje" title="${row[4]}">${row[4]}</td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = filtered.map(row => {
+    // Formatear hora con 2 dígitos
+    const [fecha, hora] = row[0].split(' ');
+    const horaFormateada = hora ? hora.replace(/^(\d):/, '0$1:') : ''; // 1:22 → 01:22
+
+    return `
+      <tr>
+        <td>${fecha}${hora ? ` <small style="color:#666">${horaFormateada}</small>` : ''}</td>
+        <td><strong>${row[1] || ''}</strong></td>
+        <td>${row[2] || ''}</td>
+        <td><span class="invitados-badge">${row[3] || '0'}</span></td>
+        <td class="mensaje" title="${row[4] || ''}">${row[4] || '—'}</td>
+      </tr>
+    `;
+  }).join('');
 }
 
 // Ordenar tabla
