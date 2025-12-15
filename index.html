@@ -3,18 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Confirmaciones Evento</title>
+  <title>Confirmaciones Evento - Dashboard</title>
 
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Feather Icons -->
   <script src="https://unpkg.com/feather-icons"></script>
-
-  <!-- Manifest -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#1a56db" />
 
@@ -22,48 +15,54 @@
     :root {
       --primary: #1a56db;
       --primary-light: #3b82f6;
+      --primary-dark: #1e40af;
       --success: #10b981;
       --danger: #ef4444;
+      --warning: #f59e0b;
       --gray-100: #f3f4f6;
       --gray-200: #e5e7eb;
       --gray-600: #4b5563;
       --gray-800: #1f2937;
       --gray-900: #111827;
       --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
       --radius: 12px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: var(--gray-800);
       min-height: 100vh;
       padding: 1rem;
     }
 
-    .container { max-width: 1200px; margin: 0 auto; }
+    .container { max-width: 1400px; margin: 0 auto; }
 
     header {
       text-align: center;
       margin-bottom: 2rem;
-      padding: 1.5rem 0;
+      padding: 2rem 0;
+      color: white;
     }
 
     h1 {
-      font-size: 2.2rem;
+      font-size: 2.5rem;
       font-weight: 700;
-      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .subtitle {
-      color: var(--gray-600);
       font-size: 1.1rem;
+      opacity: 0.95;
     }
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 1.5rem;
       margin-bottom: 2rem;
     }
@@ -75,25 +74,47 @@
       box-shadow: var(--shadow);
       display: flex;
       align-items: center;
-      transition: transform 0.2s ease;
+      transition: all 0.3s ease;
+      animation: slideUp 0.5s ease;
     }
 
-    .stat-card:hover { transform: translateY(-4px); }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .stat-card:hover { 
+      transform: translateY(-4px); 
+      box-shadow: var(--shadow-lg);
+    }
 
     .stat-icon {
-      width: 60px; height: 60px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin-right: 1rem; font-size: 1.8rem; color: white;
+      width: 60px; 
+      height: 60px; 
+      border-radius: 50%;
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      margin-right: 1rem; 
+      font-size: 1.8rem; 
+      color: white;
     }
 
-    .confirmed .stat-icon { background: var(--primary); }
-    .guests .stat-icon { background: var(--success); }
+    .confirmed .stat-icon { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
+    .guests .stat-icon { background: linear-gradient(135deg, var(--success) 0%, #34d399 100%); }
+    .average .stat-icon { background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%); }
 
     .stat-content h3 {
-      font-size: 2.2rem; font-weight: 700; color: var(--gray-900);
+      font-size: 2.2rem; 
+      font-weight: 700; 
+      color: var(--gray-900);
     }
 
-    .stat-content p { color: var(--gray-600); font-size: 0.95rem; margin-top: 0.25rem; }
+    .stat-content p { 
+      color: var(--gray-600); 
+      font-size: 0.95rem; 
+      margin-top: 0.25rem; 
+    }
 
     .charts-container {
       display: grid;
@@ -107,6 +128,7 @@
       padding: 1.5rem;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
+      animation: slideUp 0.5s ease;
     }
 
     .chart-card h3 {
@@ -114,6 +136,7 @@
       font-size: 1.2rem;
       color: var(--gray-800);
       text-align: center;
+      font-weight: 600;
     }
 
     .controls {
@@ -122,20 +145,28 @@
       gap: 1rem;
       margin-bottom: 1.5rem;
       align-items: center;
+      background: white;
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
     }
 
     .search-box, .date-filter {
       padding: 0.75rem 1rem;
-      border: 1px solid var(--gray-200);
+      border: 2px solid var(--gray-200);
       border-radius: 8px;
       font-size: 1rem;
       min-width: 200px;
+      transition: border-color 0.3s ease;
     }
 
-    .btn-refresh {
+    .search-box:focus, .date-filter:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .btn {
       padding: 0.75rem 1.5rem;
-      background: var(--primary);
-      color: white;
       border: none;
       border-radius: 8px;
       font-weight: 600;
@@ -143,9 +174,28 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      transition: all 0.3s ease;
     }
 
-    .btn-refresh:hover { background: var(--primary-light); }
+    .btn-refresh {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-refresh:hover { 
+      background: var(--primary-light);
+      transform: scale(1.05);
+    }
+
+    .btn-export {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-export:hover { 
+      background: #059669;
+      transform: scale(1.05);
+    }
 
     .table-container {
       background: white;
@@ -168,6 +218,7 @@
       color: var(--gray-800);
       cursor: pointer;
       user-select: none;
+      transition: background 0.2s ease;
     }
 
     th:hover { background: var(--gray-200); }
@@ -188,53 +239,169 @@
       border-radius: 20px;
       font-size: 0.85rem;
       font-weight: 600;
+      display: inline-block;
     }
 
-    .mensaje {
+    .mensaje-cell {
       max-width: 200px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      cursor: help;
+      color: var(--gray-600);
     }
 
-    .mensaje:hover {
-      white-space: normal;
-      overflow: visible;
-      background: #f0f9ff;
-      padding: 0.5rem;
+    .btn-view-message {
+      background: var(--primary-light);
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
       border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-view-message:hover {
+      background: var(--primary-dark);
+      transform: scale(1.05);
     }
 
     .update-info {
       text-align: center;
-      color: var(--gray-600);
+      color: white;
       font-size: 0.9rem;
+      margin-top: 1rem;
+      opacity: 0.9;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 2rem;
+      border-radius: var(--radius);
+      max-width: 600px;
+      box-shadow: var(--shadow-lg);
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .modal-header h2 {
+      color: var(--gray-900);
+      font-size: 1.5rem;
+    }
+
+    .close {
+      color: var(--gray-600);
+      font-size: 2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .close:hover { color: var(--danger); }
+
+    .modal-body {
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-info {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      background: var(--gray-100);
+      border-radius: 8px;
+    }
+
+    .info-row svg {
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .info-row strong {
+      color: var(--gray-900);
+      margin-right: 0.5rem;
+    }
+
+    .message-box {
+      background: var(--gray-100);
+      padding: 1.5rem;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+      line-height: 1.6;
+      color: var(--gray-800);
+      min-height: 100px;
+    }
+
+    .empty-message {
+      color: var(--gray-600);
+      font-style: italic;
     }
 
     @media (max-width: 768px) {
+      h1 { font-size: 1.8rem; }
       .charts-container { grid-template-columns: 1fr; }
       .controls { flex-direction: column; align-items: stretch; }
-      .search-box, .date-filter { width: 100%; }
+      .search-box, .date-filter, .btn { width: 100%; }
       table { font-size: 0.9rem; }
       th, td { padding: 0.75rem 0.5rem; }
+      .modal-content { 
+        margin: 10% 1rem;
+        padding: 1.5rem;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Confirmaciones del Evento</h1>
-      <p class="subtitle">Seguimiento completo de asistencias e invitados</p>
+      <h1>📋 Dashboard de Confirmaciones</h1>
+      <p class="subtitle">Gestión completa de asistencias e invitados</p>
     </header>
 
-    <!-- Estadísticas -->
     <div class="stats-grid">
       <div class="stat-card confirmed">
         <div class="stat-icon"><i data-feather="check-circle"></i></div>
         <div class="stat-content">
           <h3 id="confirmados">0</h3>
-          <p>Confirmados</p>
+          <p>Confirmaciones</p>
         </div>
       </div>
       <div class="stat-card guests">
@@ -244,35 +411,42 @@
           <p>Total de Invitados</p>
         </div>
       </div>
+      <div class="stat-card average">
+        <div class="stat-icon"><i data-feather="trending-up"></i></div>
+        <div class="stat-content">
+          <h3 id="promedio">0</h3>
+          <p>Promedio por Grupo</p>
+        </div>
+      </div>
     </div>
 
-    <!-- Gráficos -->
     <div class="charts-container">
       <div class="chart-card">
-        <h3>Resumen Visual</h3>
+        <h3>Distribución de Asistentes</h3>
         <canvas id="doughnutChart"></canvas>
       </div>
       <div class="chart-card">
-        <h3>Proporción</h3>
+        <h3>Comparativa General</h3>
         <canvas id="barChart"></canvas>
       </div>
     </div>
 
-    <!-- Controles -->
     <div class="controls">
-      <input type="text" id="searchInput" class="search-box" placeholder="Buscar por nombre o teléfono..." />
+      <input type="text" id="searchInput" class="search-box" placeholder="🔍 Buscar por nombre, teléfono o mensaje..." />
       <input type="date" id="dateFilter" class="date-filter" />
-      <button class="btn-refresh" onclick="actualizarDatos()">
+      <button class="btn btn-refresh" onclick="actualizarDatos()">
         <i data-feather="refresh-cw"></i> Actualizar
+      </button>
+      <button class="btn btn-export" onclick="exportarCSV()">
+        <i data-feather="download"></i> Exportar CSV
       </button>
     </div>
 
-    <!-- Tabla -->
     <div class="table-container">
       <table id="registrosTable">
         <thead>
           <tr>
-            <th onclick="sortTable(0)">Fecha y Hora ↓</th>
+            <th onclick="sortTable(0)">Fecha y Hora ↕</th>
             <th onclick="sortTable(1)">Nombre</th>
             <th onclick="sortTable(2)">Teléfono</th>
             <th onclick="sortTable(3)">Invitados</th>
@@ -286,7 +460,249 @@
     <p class="update-info">Última actualización: <span id="lastUpdate">—</span></p>
   </div>
 
-  <script src="app.js"></script>
-  <script>feather.replace();</script>
+  <!-- Modal para mensajes -->
+  <div id="messageModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>💬 Mensaje del Invitado</h2>
+        <span class="close" onclick="cerrarModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="modal-info">
+          <div class="info-row">
+            <i data-feather="user"></i>
+            <div><strong>Nombre:</strong> <span id="modalNombre"></span></div>
+          </div>
+          <div class="info-row">
+            <i data-feather="phone"></i>
+            <div><strong>Teléfono:</strong> <span id="modalTelefono"></span></div>
+          </div>
+          <div class="info-row">
+            <i data-feather="calendar"></i>
+            <div><strong>Fecha:</strong> <span id="modalFecha"></span></div>
+          </div>
+          <div class="info-row">
+            <i data-feather="users"></i>
+            <div><strong>Invitados:</strong> <span id="modalInvitados"></span></div>
+          </div>
+        </div>
+        <div class="message-box" id="modalMensaje"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbztMbK9lBRCUafis8iB6sQpahND6btA-WawWvtkM1rDn9ttd2GXx3pnbcAIX3APCjIntg/exec';
+    
+    let doughnutChart, barChart;
+    let registros = [];
+
+    async function actualizarDatos() {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        registros = data.registros || [];
+
+        const confirmados = registros.length;
+        const totalInvitados = registros.reduce((sum, r) => sum + (parseInt(r[3]) || 0), 0);
+        const promedio = confirmados > 0 ? (totalInvitados / confirmados).toFixed(1) : 0;
+
+        document.getElementById('confirmados').textContent = confirmados;
+        document.getElementById('invitados').textContent = totalInvitados;
+        document.getElementById('promedio').textContent = promedio;
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleString('es-ES');
+
+        renderTabla();
+        actualizarGraficos(confirmados, totalInvitados);
+        feather.replace();
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al conectar con Google Sheets.');
+      }
+    }
+
+    function renderTabla() {
+      const tbody = document.getElementById('tablaBody');
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const dateFilter = document.getElementById('dateFilter').value;
+
+      let filtered = registros;
+
+      if (search) {
+        filtered = filtered.filter(r =>
+          r[1].toLowerCase().includes(search) || 
+          r[2].includes(search) ||
+          (r[4] || '').toLowerCase().includes(search)
+        );
+      }
+
+      if (dateFilter) {
+        filtered = filtered.filter(r => {
+          const fecha = r[0].split(' ')[0];
+          const [dia, mes, anio] = fecha.split('/');
+          const fechaISO = `${anio}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+          return fechaISO === dateFilter;
+        });
+      }
+
+      tbody.innerHTML = filtered.map((row, idx) => {
+        const [fecha, hora] = row[0].split(' ');
+        const horaFormateada = hora ? hora.replace(/^(\d):/, '0$1:') : '';
+        const mensaje = row[4] || '';
+        const mensajeCorto = mensaje.length > 30 ? mensaje.substring(0, 30) + '...' : mensaje;
+
+        return `
+          <tr>
+            <td>${fecha}${hora ? ` <small style="color:#666">${horaFormateada}</small>` : ''}</td>
+            <td><strong>${row[1] || ''}</strong></td>
+            <td>${row[2] || ''}</td>
+            <td><span class="invitados-badge">${row[3] || '0'}</span></td>
+            <td>
+              ${mensaje ? 
+                `<button class="btn-view-message" onclick="abrirModal(${idx})">
+                  Ver mensaje
+                </button>` : 
+                '<span style="color: #9ca3af">Sin mensaje</span>'}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function abrirModal(index) {
+      const row = registros[index];
+      document.getElementById('modalNombre').textContent = row[1] || 'N/A';
+      document.getElementById('modalTelefono').textContent = row[2] || 'N/A';
+      document.getElementById('modalFecha').textContent = row[0] || 'N/A';
+      document.getElementById('modalInvitados').textContent = row[3] || '0';
+      
+      const mensaje = row[4] || '';
+      const mensajeElement = document.getElementById('modalMensaje');
+      
+      if (mensaje) {
+        mensajeElement.textContent = mensaje;
+        mensajeElement.className = 'message-box';
+      } else {
+        mensajeElement.textContent = 'No se dejó ningún mensaje';
+        mensajeElement.className = 'message-box empty-message';
+      }
+      
+      document.getElementById('messageModal').style.display = 'block';
+      feather.replace();
+    }
+
+    function cerrarModal() {
+      document.getElementById('messageModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('messageModal');
+      if (event.target == modal) {
+        cerrarModal();
+      }
+    }
+
+    function sortTable(col) {
+      const tbody = document.getElementById('tablaBody');
+      const rows = Array.from(tbody.rows);
+
+      const isDate = col === 0;
+      const isNumber = col === 3;
+
+      rows.sort((a, b) => {
+        let A = a.cells[col].textContent;
+        let B = b.cells[col].textContent;
+
+        if (isDate) {
+          A = new Date(A.split('/').reverse().join('-') + ' ' + A.split(' ')[1]);
+          B = new Date(B.split('/').reverse().join('-') + ' ' + B.split(' ')[1]);
+        } else if (isNumber) {
+          A = parseInt(A) || 0;
+          B = parseInt(B) || 0;
+        }
+
+        return A > B ? 1 : -1;
+      });
+
+      tbody.innerHTML = '';
+      rows.forEach(r => tbody.appendChild(r));
+    }
+
+    function actualizarGraficos(confirmados, invitados) {
+      const ctx1 = document.getElementById('doughnutChart').getContext('2d');
+      if (doughnutChart) doughnutChart.destroy();
+      doughnutChart = new Chart(ctx1, {
+        type: 'doughnut',
+        data: {
+          labels: ['Confirmaciones', 'Invitados Extra'],
+          datasets: [{
+            data: [confirmados, Math.max(0, invitados - confirmados)],
+            backgroundColor: ['#1a56db', '#10b981'],
+            borderWidth: 0
+          }]
+        },
+        options: { 
+          responsive: true, 
+          plugins: { 
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+
+      const ctx2 = document.getElementById('barChart').getContext('2d');
+      if (barChart) barChart.destroy();
+      barChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: ['Confirmaciones', 'Total Invitados'],
+          datasets: [{
+            data: [confirmados, invitados],
+            backgroundColor: ['#1a56db', '#10b981'],
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    }
+
+    function exportarCSV() {
+      if (registros.length === 0) {
+        alert('No hay datos para exportar');
+        return;
+      }
+
+      let csv = 'Fecha y Hora,Nombre,Teléfono,Invitados,Mensaje\n';
+      registros.forEach(row => {
+        csv += `"${row[0]}","${row[1]}","${row[2]}","${row[3]}","${row[4] || ''}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `confirmaciones_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    document.getElementById('searchInput').addEventListener('input', renderTabla);
+    document.getElementById('dateFilter').addEventListener('change', renderTabla);
+
+    setInterval(actualizarDatos, 3 * 60 * 1000);
+
+    window.onload = () => {
+      actualizarDatos();
+      feather.replace();
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js');
+      }
+    };
+  </script>
 </body>
 </html>
