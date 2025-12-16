@@ -403,6 +403,8 @@
       line-height: 1.6;
       color: var(--gray-800);
       min-height: 100px;
+      max-height: 200px;
+      overflow-y: auto;
     }
 
     .empty-message {
@@ -862,12 +864,12 @@
               ${dup.registros.map(reg => `
                 <div class="duplicate-item">
                   <div class="duplicate-item-header">
-                    <span class="duplicate-name">${String(reg.data[1] || 'Sin nombre')}</span>
+                    <span class="duplicate-name">${String(reg.data[1] || '').trim()}</span>
                     <span class="invitados-badge">${String(reg.data[3] || '0')} invitados</span>
                   </div>
                   <div class="duplicate-details">
-                    <div>📅 ${String(reg.data[0] || '')}</div>
-                    <div>📱 ${String(reg.data[2] || 'Sin teléfono')}</div>
+                    <div>📅 ${String(reg.data[0] || '').trim()}</div>
+                    <div>📱 ${String(reg.data[2] || 'Sin teléfono').trim()}</div>
                     ${reg.data[4] ? `<div>💬 ${String(reg.data[4])}</div>` : ''}
                   </div>
                 </div>
@@ -947,6 +949,7 @@
         btnEliminar.innerHTML = '<i data-feather="loader"></i> Eliminando...';
         btnEliminar.disabled = true;
         feather.replace();
+        mostrarNotificacion('⏳ Eliminando confirmación...', 'info');
         
         // Usar GET en lugar de POST para evitar problemas de CORS
         // Agregar timestamp para evitar caché
@@ -968,36 +971,9 @@
         console.log('Resultado:', result);
         
         if (result.success) {
-          // Eliminar localmente del array
-          registros.splice(registroAEliminar, 1);
-          
-          // Cerrar modal
-          cerrarModalEliminar();
-          
-          // Actualizar vista
-          const confirmados = registros.length;
-          const totalInvitados = registros.reduce((sum, r) => sum + (parseInt(r[3]) || 0), 0);
-          const promedio = confirmados > 0 ? (totalInvitados / confirmados).toFixed(1) : 0;
-          
-          document.getElementById('confirmados').textContent = confirmados;
-          document.getElementById('invitados').textContent = totalInvitados;
-          document.getElementById('promedio').textContent = promedio;
-          
-          // Re-detectar duplicados
-          duplicados = detectarDuplicados();
-          const duplicatesCard = document.getElementById('duplicatesCard');
-          if (duplicados.length > 0) {
-            duplicatesCard.style.display = 'flex';
-            document.getElementById('duplicados').textContent = duplicados.length;
-          } else {
-            duplicatesCard.style.display = 'none';
-          }
-          
-          renderTabla();
-          actualizarGraficos(confirmados, totalInvitados);
-          
-          // Mostrar mensaje de éxito
           mostrarNotificacion('✅ Confirmación eliminada exitosamente', 'success');
+          await actualizarDatos(); // Refresca los datos desde Google Sheets
+          cerrarModalEliminar();
         } else {
           throw new Error(result.error || 'Error al eliminar');
         }
@@ -1018,18 +994,24 @@
     function mostrarNotificacion(mensaje, tipo) {
       const notif = document.createElement('div');
       notif.textContent = mensaje;
+      let bg = 'var(--gray-800)';
+      if (tipo === 'success') bg = 'var(--success)';
+      else if (tipo === 'error') bg = 'var(--danger)';
+      else if (tipo === 'info') bg = 'var(--primary-light)';
       notif.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
         padding: 1rem 1.5rem;
-        background: ${tipo === 'success' ? 'var(--success)' : 'var(--danger)'};
+        background: ${bg};
         color: white;
         border-radius: 8px;
         box-shadow: var(--shadow-lg);
         z-index: 10000;
         animation: slideIn 0.3s ease;
         font-weight: 600;
+        min-width: 220px;
+        text-align: center;
       `;
       
       document.body.appendChild(notif);
@@ -1065,17 +1047,16 @@
       }
 
       tbody.innerHTML = filtered.map((row, idx) => {
-        const [fecha, hora] = String(row[0] || '').split(' ');
-        const horaFormateada = hora ? hora.replace(/^(\d):/, '0$1:') : '';
-        const fechaCorta = fecha ? fecha.split('/').slice(0, 2).join('/') : ''; // Solo DD/MM
+        // Formatear fecha correctamente
+        const fechaFormateada = formatoFecha(row[0]);
         const mensaje = String(row[4] || '');
         const registroIndex = registros.findIndex(r => r === row);
 
         return `
           <tr>
             <td>
-              <div>${fechaCorta}</div>
-              ${hora ? `<small style="color:#999; font-size: 0.75rem;">${horaFormateada}</small>` : ''}
+              <div>${fechaFormateada.split(' ')[0]}</div>
+              <small style="color:#999; font-size: 0.75rem;">${fechaFormateada.split(' ')[1]}</small>
             </td>
             <td class="hide-mobile">${String(row[2] || '')}</td>
             <td><strong>${String(row[1] || '')}</strong></td>
@@ -1103,7 +1084,7 @@
       const row = registros[index];
       document.getElementById('modalNombre').textContent = String(row[1] || 'N/A');
       document.getElementById('modalTelefono').textContent = String(row[2] || 'N/A');
-      document.getElementById('modalFecha').textContent = String(row[0] || 'N/A');
+      document.getElementById('modalFecha').textContent = formatoFecha(row[0]);
       document.getElementById('modalInvitados').textContent = String(row[3] || '0');
       
       const mensaje = String(row[4] || '');
@@ -1112,9 +1093,13 @@
       if (mensaje) {
         mensajeElement.textContent = mensaje;
         mensajeElement.className = 'message-box';
+        mensajeElement.style.maxHeight = '200px';
+        mensajeElement.style.overflowY = 'auto';
       } else {
         mensajeElement.textContent = 'No se dejó ningún mensaje';
         mensajeElement.className = 'message-box empty-message';
+        mensajeElement.style.maxHeight = '';
+        mensajeElement.style.overflowY = '';
       }
       
       document.getElementById('messageModal').style.display = 'block';
@@ -1126,18 +1111,15 @@
     }
 
     window.onclick = function(event) {
-      const modal = document.getElementById('messageModal');
-      const modalDup = document.getElementById('duplicatesModal');
-      const modalDel = document.getElementById('deleteModal');
-      if (event.target == modal) {
-        cerrarModal();
-      }
-      if (event.target == modalDup) {
-        cerrarModalDuplicados();
-      }
-      if (event.target == modalDel) {
-        cerrarModalEliminar();
-      }
+      const modals = ['messageModal', 'duplicatesModal', 'deleteModal'];
+      modals.forEach(id => {
+        const modal = document.getElementById(id);
+        if (event.target === modal) {
+          if (id === 'messageModal') cerrarModal();
+          if (id === 'duplicatesModal') cerrarModalDuplicados();
+          if (id === 'deleteModal') cerrarModalEliminar();
+        }
+      });
     }
 
     function sortTable(col) {
@@ -1220,7 +1202,7 @@
       
       registros.forEach(row => {
         datosExcel.push([
-          String(row[0] || ''),      // Fecha y hora
+          formatoFecha(String(row[0] || '')),      // Fecha y hora
           String(row[1] || ''),      // Nombre
           String(row[2] || ''),      // Teléfono
           String(row[3] || '0'),     // Invitados
@@ -1280,6 +1262,23 @@
     document.getElementById('dateFilter').addEventListener('change', renderTabla);
 
     setInterval(actualizarDatos, 3 * 60 * 1000);
+
+    // Formateador de fecha universal para la app
+    function formatoFecha(fechaISO) {
+      if (!fechaISO) return '';
+      let d = new Date(fechaISO);
+      if (isNaN(d.getTime())) {
+        // Si ya es formato DD/MM/YYYY HH:MM:SS
+        return fechaISO;
+      }
+      const dia = String(d.getDate()).padStart(2, '0');
+      const mes = String(d.getMonth() + 1).padStart(2, '0');
+      const anio = d.getFullYear();
+      const hora = String(d.getHours()).padStart(2, '0');
+      const min = String(d.getMinutes()).padStart(2, '0');
+      const seg = String(d.getSeconds()).padStart(2, '0');
+      return `${dia}/${mes}/${anio} ${hora}:${min}:${seg}`;
+    }
 
     window.onload = () => {
       actualizarDatos();
