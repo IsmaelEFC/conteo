@@ -916,19 +916,24 @@
         btnEliminar.disabled = true;
         feather.replace();
         
-        // Llamar a la API para eliminar (necesitarás agregar este endpoint en tu Google Apps Script)
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            action: 'delete',
-            fechaHora: fechaHora
-          })
+        // Usar GET en lugar de POST para evitar problemas de CORS
+        // Agregar timestamp para evitar caché
+        const timestamp = new Date().getTime();
+        const url = `${API_URL}?action=delete&fechaHora=${encodeURIComponent(fechaHora)}&_=${timestamp}`;
+        
+        console.log('Eliminando con URL:', url); // Para debug
+        
+        const response = await fetch(url, {
+          method: 'GET',
+          cache: 'no-cache'
         });
         
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
         const result = await response.json();
+        console.log('Resultado:', result); // Para debug
         
         if (result.success) {
           // Eliminar localmente del array
@@ -966,13 +971,15 @@
         }
       } catch (error) {
         console.error('Error al eliminar:', error);
-        mostrarNotificacion('❌ Error al eliminar la confirmación', 'error');
+        mostrarNotificacion('❌ Error al eliminar: ' + error.message, 'error');
         
         // Restaurar botón
         const btnEliminar = document.querySelector('.btn-confirm-delete');
-        btnEliminar.innerHTML = '<i data-feather="trash-2"></i> Eliminar';
-        btnEliminar.disabled = false;
-        feather.replace();
+        if (btnEliminar) {
+          btnEliminar.innerHTML = '<i data-feather="trash-2"></i> Eliminar';
+          btnEliminar.disabled = false;
+          feather.replace();
+        }
       }
     }
 
@@ -1245,8 +1252,14 @@
     window.onload = () => {
       actualizarDatos();
       feather.replace();
+      
+      // Desactivar service worker temporalmente para evitar problemas de caché
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js');
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+          }
+        });
       }
     };
   </script>
