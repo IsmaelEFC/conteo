@@ -906,7 +906,27 @@
       if (registroAEliminar === null) return;
       
       const row = registros[registroAEliminar];
-      const fechaHora = String(row[0] || '');
+      // IMPORTANTE: Mantener la fecha exactamente como está en el sheet
+      const fechaHoraOriginal = row[0];
+      
+      // Si es un objeto Date, convertirlo al formato correcto
+      let fechaHora;
+      if (fechaHoraOriginal instanceof Date) {
+        // Convertir Date a formato DD/MM/YYYY HH:MM:SS
+        const day = String(fechaHoraOriginal.getDate()).padStart(2, '0');
+        const month = String(fechaHoraOriginal.getMonth() + 1).padStart(2, '0');
+        const year = fechaHoraOriginal.getFullYear();
+        const hours = String(fechaHoraOriginal.getHours()).padStart(2, '0');
+        const minutes = String(fechaHoraOriginal.getMinutes()).padStart(2, '0');
+        const seconds = String(fechaHoraOriginal.getSeconds()).padStart(2, '0');
+        fechaHora = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+      } else {
+        // Si ya es string, usarlo tal cual
+        fechaHora = String(fechaHoraOriginal);
+      }
+      
+      console.log('Fecha original:', fechaHoraOriginal);
+      console.log('Fecha a enviar:', fechaHora);
       
       try {
         // Mostrar indicador de carga
@@ -921,7 +941,7 @@
         const timestamp = new Date().getTime();
         const url = `${API_URL}?action=delete&fechaHora=${encodeURIComponent(fechaHora)}&_=${timestamp}`;
         
-        console.log('Eliminando con URL:', url); // Para debug
+        console.log('Eliminando con URL:', url);
         
         const response = await fetch(url, {
           method: 'GET',
@@ -933,7 +953,7 @@
         }
         
         const result = await response.json();
-        console.log('Resultado:', result); // Para debug
+        console.log('Resultado:', result);
         
         if (result.success) {
           // Eliminar localmente del array
