@@ -103,6 +103,7 @@
     .confirmed .stat-icon { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
     .guests .stat-icon { background: linear-gradient(135deg, var(--success) 0%, #34d399 100%); }
     .average .stat-icon { background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%); }
+    .duplicates .stat-icon { background: linear-gradient(135deg, var(--danger) 0%, #f87171 100%); }
 
     .stat-content h3 {
       font-size: 2.2rem; 
@@ -259,11 +260,45 @@
       cursor: pointer;
       font-size: 0.85rem;
       transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      white-space: nowrap;
+    }
+
+    .btn-view-message svg {
+      width: 14px;
+      height: 14px;
     }
 
     .btn-view-message:hover {
       background: var(--primary-dark);
       transform: scale(1.05);
+    }
+
+    .btn-delete {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+    }
+
+    .btn-delete:hover {
+      background: #dc2626;
+      transform: scale(1.1);
+    }
+
+    .btn-delete svg {
+      width: 16px;
+      height: 16px;
     }
 
     .update-info {
@@ -375,16 +410,165 @@
       font-style: italic;
     }
 
+    /* Estilos para duplicados */
+    .duplicate-group {
+      background: #fef2f2;
+      border: 2px solid #fca5a5;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .duplicate-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    .duplicate-item {
+      background: white;
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border-left: 3px solid var(--danger);
+    }
+
+    .duplicate-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .duplicate-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .duplicate-name {
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+
+    .duplicate-details {
+      font-size: 0.9rem;
+      color: var(--gray-600);
+      display: grid;
+      gap: 0.25rem;
+    }
+
+    .badge-duplicate {
+      background: var(--danger);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Clase para ocultar en móvil */
+    @media (max-width: 768px) {
+      .hide-mobile {
+        display: none !important;
+      }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(400px); opacity: 0; }
+    }
+
     @media (max-width: 768px) {
       h1 { font-size: 1.8rem; }
       .charts-container { grid-template-columns: 1fr; }
       .controls { flex-direction: column; align-items: stretch; }
       .search-box, .date-filter, .btn { width: 100%; }
-      table { font-size: 0.9rem; }
-      th, td { padding: 0.75rem 0.5rem; }
+      
+      /* Tabla responsive en móvil */
+      .table-container {
+        overflow-x: auto;
+      }
+      
+      table { 
+        font-size: 0.85rem;
+        min-width: 100%;
+      }
+      
+      th, td { 
+        padding: 0.6rem 0.4rem;
+        white-space: nowrap;
+      }
+      
+      /* Ocultar columnas menos importantes en móvil */
+      th:nth-child(2), td:nth-child(2) { /* Teléfono */
+        display: none;
+      }
+      
+      /* Ajustar ancho de columnas */
+      th:nth-child(1), td:nth-child(1) { /* Fecha */
+        min-width: 100px;
+      }
+      
+      th:nth-child(3), td:nth-child(3) { /* Nombre - más ancho */
+        min-width: 120px;
+        max-width: 150px;
+      }
+      
+      th:nth-child(4), td:nth-child(4) { /* Invitados */
+        min-width: 70px;
+      }
+      
+      th:nth-child(5), td:nth-child(5) { /* Mensaje */
+        min-width: 100px;
+      }
+      
+      th:nth-child(6), td:nth-child(6) { /* Acciones */
+        min-width: 60px;
+      }
+      
+      /* Botones más pequeños en móvil */
+      .btn-view-message {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.8rem;
+      }
+      
+      .btn-delete {
+        width: 32px;
+        height: 32px;
+      }
+      
+      .invitados-badge {
+        padding: 0.2rem 0.6rem;
+        font-size: 0.8rem;
+      }
+      
       .modal-content { 
         margin: 10% 1rem;
         padding: 1.5rem;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+      
+      /* Ajustes específicos para modal de mensaje */
+      .modal-info {
+        font-size: 0.9rem;
+      }
+      
+      .info-row {
+        padding: 0.6rem;
+        flex-wrap: wrap;
+      }
+      
+      .message-box {
+        font-size: 0.9rem;
+        padding: 1rem;
       }
     }
   </style>
@@ -418,6 +602,13 @@
           <p>Promedio por Grupo</p>
         </div>
       </div>
+      <div class="stat-card duplicates" id="duplicatesCard" style="display: none; cursor: pointer;" onclick="mostrarDuplicados()">
+        <div class="stat-icon"><i data-feather="alert-circle"></i></div>
+        <div class="stat-content">
+          <h3 id="duplicados">0</h3>
+          <p>Posibles Duplicados</p>
+        </div>
+      </div>
     </div>
 
     <div class="charts-container">
@@ -437,8 +628,8 @@
       <button class="btn btn-refresh" onclick="actualizarDatos()">
         <i data-feather="refresh-cw"></i> Actualizar
       </button>
-      <button class="btn btn-export" onclick="exportarCSV()">
-        <i data-feather="download"></i> Exportar CSV
+      <button class="btn btn-export" onclick="exportarExcel()">
+        <i data-feather="file-text"></i> Exportar Excel
       </button>
     </div>
 
@@ -446,11 +637,12 @@
       <table id="registrosTable">
         <thead>
           <tr>
-            <th onclick="sortTable(0)">Fecha y Hora ↕</th>
-            <th onclick="sortTable(1)">Nombre</th>
-            <th onclick="sortTable(2)">Teléfono</th>
-            <th onclick="sortTable(3)">Invitados</th>
+            <th onclick="sortTable(0)">Fecha ↕</th>
+            <th onclick="sortTable(1)" class="hide-mobile">Teléfono</th>
+            <th onclick="sortTable(2)">Nombre</th>
+            <th onclick="sortTable(3)">Invit.</th>
             <th>Mensaje</th>
+            <th style="width: 80px; text-align: center;">Acción</th>
           </tr>
         </thead>
         <tbody id="tablaBody"></tbody>
@@ -491,11 +683,67 @@
     </div>
   </div>
 
+  <!-- Modal para duplicados -->
+  <div id="duplicatesModal" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+      <div class="modal-header">
+        <h2>⚠️ Análisis de Duplicados</h2>
+        <span class="close" onclick="cerrarModalDuplicados()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--gray-600); margin-bottom: 1.5rem;">
+          Se encontraron las siguientes confirmaciones que podrían ser duplicadas. 
+          Revisa si son diferentes personas o confirmaciones repetidas.
+        </p>
+        <div id="duplicatesList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación de eliminación -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+      <div class="modal-header">
+        <h2>🗑️ Confirmar Eliminación</h2>
+        <span class="close" onclick="cerrarModalEliminar()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--gray-600); margin-bottom: 1rem;">
+          ¿Estás seguro que deseas eliminar esta confirmación?
+        </p>
+        <div class="modal-info" style="margin-bottom: 1.5rem;">
+          <div class="info-row">
+            <i data-feather="user"></i>
+            <div><strong>Nombre:</strong> <span id="deleteNombre"></span></div>
+          </div>
+          <div class="info-row">
+            <i data-feather="phone"></i>
+            <div><strong>Teléfono:</strong> <span id="deleteTelefono"></span></div>
+          </div>
+          <div class="info-row">
+            <i data-feather="users"></i>
+            <div><strong>Invitados:</strong> <span id="deleteInvitados"></span></div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <button class="btn btn-cancel" onclick="cerrarModalEliminar()" style="flex: 1; background: var(--gray-200); color: var(--gray-800);">
+            <i data-feather="x"></i> Cancelar
+          </button>
+          <button class="btn btn-confirm-delete" onclick="ejecutarEliminacion()" style="flex: 1; background: var(--danger); color: white;">
+            <i data-feather="trash-2"></i> Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbztMbK9lBRCUafis8iB6sQpahND6btA-WawWvtkM1rDn9ttd2GXx3pnbcAIX3APCjIntg/exec';
     
     let doughnutChart, barChart;
     let registros = [];
+    let duplicados = [];
+    let registroAEliminar = null;
 
     async function actualizarDatos() {
       try {
@@ -507,10 +755,22 @@
         const totalInvitados = registros.reduce((sum, r) => sum + (parseInt(r[3]) || 0), 0);
         const promedio = confirmados > 0 ? (totalInvitados / confirmados).toFixed(1) : 0;
 
+        // Detectar duplicados
+        duplicados = detectarDuplicados();
+        
         document.getElementById('confirmados').textContent = confirmados;
         document.getElementById('invitados').textContent = totalInvitados;
         document.getElementById('promedio').textContent = promedio;
         document.getElementById('lastUpdate').textContent = new Date().toLocaleString('es-ES');
+        
+        // Mostrar/ocultar card de duplicados
+        const duplicatesCard = document.getElementById('duplicatesCard');
+        if (duplicados.length > 0) {
+          duplicatesCard.style.display = 'flex';
+          document.getElementById('duplicados').textContent = duplicados.length;
+        } else {
+          duplicatesCard.style.display = 'none';
+        }
 
         renderTabla();
         actualizarGraficos(confirmados, totalInvitados);
@@ -519,6 +779,226 @@
         console.error('Error:', error);
         alert('Error al conectar con Google Sheets.');
       }
+    }
+
+    function detectarDuplicados() {
+      const duplicadosEncontrados = [];
+      const vistos = new Map();
+
+      registros.forEach((registro, index) => {
+        // Convertir a string de forma segura
+        const nombre = String(registro[1] || '').toLowerCase().trim();
+        const telefono = String(registro[2] || '').trim();
+        
+        // Normalizar nombre (quitar acentos y espacios extras)
+        const nombreNormalizado = nombre
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/\s+/g, ' ');
+
+        // Buscar por nombre similar
+        const keyNombre = nombreNormalizado;
+        
+        // Buscar por teléfono (solo últimos 8 dígitos para evitar falsos positivos con código de área)
+        const telefonoLimpio = telefono.replace(/\D/g, '');
+        const keyTelefono = telefonoLimpio.slice(-8);
+
+        // Verificar duplicado por nombre
+        if (nombre && keyNombre.length > 3) {
+          if (vistos.has('nombre:' + keyNombre)) {
+            const original = vistos.get('nombre:' + keyNombre);
+            duplicadosEncontrados.push({
+              tipo: 'nombre',
+              criterio: nombre,
+              registros: [original, { index, data: registro }]
+            });
+          } else {
+            vistos.set('nombre:' + keyNombre, { index, data: registro });
+          }
+        }
+
+        // Verificar duplicado por teléfono
+        if (telefonoLimpio && keyTelefono.length >= 8) {
+          if (vistos.has('tel:' + keyTelefono)) {
+            const original = vistos.get('tel:' + keyTelefono);
+            // Solo agregar si no es el mismo registro que ya encontramos por nombre
+            const yaExiste = duplicadosEncontrados.some(d => 
+              d.registros.some(r => r.index === index)
+            );
+            if (!yaExiste) {
+              duplicadosEncontrados.push({
+                tipo: 'teléfono',
+                criterio: telefono,
+                registros: [original, { index, data: registro }]
+              });
+            }
+          } else {
+            vistos.set('tel:' + keyTelefono, { index, data: registro });
+          }
+        }
+      });
+
+      return duplicadosEncontrados;
+    }
+
+    function mostrarDuplicados() {
+      const modal = document.getElementById('duplicatesModal');
+      const lista = document.getElementById('duplicatesList');
+      
+      if (duplicados.length === 0) {
+        lista.innerHTML = '<p style="color: var(--success); text-align: center; padding: 2rem;">✅ No se encontraron duplicados</p>';
+      } else {
+        lista.innerHTML = duplicados.map((dup, idx) => {
+          const tipoIcono = dup.tipo === 'nombre' ? '👤' : '📱';
+          const tipoTexto = dup.tipo === 'nombre' ? 'Mismo nombre' : 'Mismo teléfono';
+          
+          return `
+            <div class="duplicate-group">
+              <div class="duplicate-header">
+                <span>${tipoIcono}</span>
+                <span>${tipoTexto}: "${dup.criterio}"</span>
+                <span class="badge-duplicate">${dup.registros.length} coincidencias</span>
+              </div>
+              ${dup.registros.map(reg => `
+                <div class="duplicate-item">
+                  <div class="duplicate-item-header">
+                    <span class="duplicate-name">${String(reg.data[1] || 'Sin nombre')}</span>
+                    <span class="invitados-badge">${String(reg.data[3] || '0')} invitados</span>
+                  </div>
+                  <div class="duplicate-details">
+                    <div>📅 ${String(reg.data[0] || '')}</div>
+                    <div>📱 ${String(reg.data[2] || 'Sin teléfono')}</div>
+                    ${reg.data[4] ? `<div>💬 ${String(reg.data[4])}</div>` : ''}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }).join('');
+      }
+      
+      modal.style.display = 'block';
+      feather.replace();
+    }
+
+    function cerrarModalDuplicados() {
+      document.getElementById('duplicatesModal').style.display = 'none';
+    }
+
+    function confirmarEliminacion(index) {
+      registroAEliminar = index;
+      const row = registros[index];
+      
+      document.getElementById('deleteNombre').textContent = String(row[1] || 'N/A');
+      document.getElementById('deleteTelefono').textContent = String(row[2] || 'N/A');
+      document.getElementById('deleteInvitados').textContent = String(row[3] || '0');
+      
+      document.getElementById('deleteModal').style.display = 'block';
+      feather.replace();
+    }
+
+    function cerrarModalEliminar() {
+      document.getElementById('deleteModal').style.display = 'none';
+      registroAEliminar = null;
+    }
+
+    async function ejecutarEliminacion() {
+      if (registroAEliminar === null) return;
+      
+      const row = registros[registroAEliminar];
+      const fechaHora = String(row[0] || '');
+      
+      try {
+        // Mostrar indicador de carga
+        const btnEliminar = document.querySelector('.btn-confirm-delete');
+        const textoOriginal = btnEliminar.innerHTML;
+        btnEliminar.innerHTML = '<i data-feather="loader"></i> Eliminando...';
+        btnEliminar.disabled = true;
+        feather.replace();
+        
+        // Llamar a la API para eliminar (necesitarás agregar este endpoint en tu Google Apps Script)
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'delete',
+            fechaHora: fechaHora
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Eliminar localmente del array
+          registros.splice(registroAEliminar, 1);
+          
+          // Cerrar modal
+          cerrarModalEliminar();
+          
+          // Actualizar vista
+          const confirmados = registros.length;
+          const totalInvitados = registros.reduce((sum, r) => sum + (parseInt(r[3]) || 0), 0);
+          const promedio = confirmados > 0 ? (totalInvitados / confirmados).toFixed(1) : 0;
+          
+          document.getElementById('confirmados').textContent = confirmados;
+          document.getElementById('invitados').textContent = totalInvitados;
+          document.getElementById('promedio').textContent = promedio;
+          
+          // Re-detectar duplicados
+          duplicados = detectarDuplicados();
+          const duplicatesCard = document.getElementById('duplicatesCard');
+          if (duplicados.length > 0) {
+            duplicatesCard.style.display = 'flex';
+            document.getElementById('duplicados').textContent = duplicados.length;
+          } else {
+            duplicatesCard.style.display = 'none';
+          }
+          
+          renderTabla();
+          actualizarGraficos(confirmados, totalInvitados);
+          
+          // Mostrar mensaje de éxito
+          mostrarNotificacion('✅ Confirmación eliminada exitosamente', 'success');
+        } else {
+          throw new Error(result.error || 'Error al eliminar');
+        }
+      } catch (error) {
+        console.error('Error al eliminar:', error);
+        mostrarNotificacion('❌ Error al eliminar la confirmación', 'error');
+        
+        // Restaurar botón
+        const btnEliminar = document.querySelector('.btn-confirm-delete');
+        btnEliminar.innerHTML = '<i data-feather="trash-2"></i> Eliminar';
+        btnEliminar.disabled = false;
+        feather.replace();
+      }
+    }
+
+    function mostrarNotificacion(mensaje, tipo) {
+      const notif = document.createElement('div');
+      notif.textContent = mensaje;
+      notif.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        background: ${tipo === 'success' ? 'var(--success)' : 'var(--danger)'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: var(--shadow-lg);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+        font-weight: 600;
+      `;
+      
+      document.body.appendChild(notif);
+      
+      setTimeout(() => {
+        notif.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notif.remove(), 300);
+      }, 3000);
     }
 
     function renderTabla() {
@@ -530,15 +1010,15 @@
 
       if (search) {
         filtered = filtered.filter(r =>
-          r[1].toLowerCase().includes(search) || 
-          r[2].includes(search) ||
-          (r[4] || '').toLowerCase().includes(search)
+          String(r[1] || '').toLowerCase().includes(search) || 
+          String(r[2] || '').includes(search) ||
+          String(r[4] || '').toLowerCase().includes(search)
         );
       }
 
       if (dateFilter) {
         filtered = filtered.filter(r => {
-          const fecha = r[0].split(' ')[0];
+          const fecha = String(r[0] || '').split(' ')[0];
           const [dia, mes, anio] = fecha.split('/');
           const fechaISO = `${anio}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
           return fechaISO === dateFilter;
@@ -546,37 +1026,48 @@
       }
 
       tbody.innerHTML = filtered.map((row, idx) => {
-        const [fecha, hora] = row[0].split(' ');
+        const [fecha, hora] = String(row[0] || '').split(' ');
         const horaFormateada = hora ? hora.replace(/^(\d):/, '0$1:') : '';
-        const mensaje = row[4] || '';
-        const mensajeCorto = mensaje.length > 30 ? mensaje.substring(0, 30) + '...' : mensaje;
+        const fechaCorta = fecha ? fecha.split('/').slice(0, 2).join('/') : ''; // Solo DD/MM
+        const mensaje = String(row[4] || '');
+        const registroIndex = registros.findIndex(r => r === row);
 
         return `
           <tr>
-            <td>${fecha}${hora ? ` <small style="color:#666">${horaFormateada}</small>` : ''}</td>
-            <td><strong>${row[1] || ''}</strong></td>
-            <td>${row[2] || ''}</td>
-            <td><span class="invitados-badge">${row[3] || '0'}</span></td>
+            <td>
+              <div>${fechaCorta}</div>
+              ${hora ? `<small style="color:#999; font-size: 0.75rem;">${horaFormateada}</small>` : ''}
+            </td>
+            <td class="hide-mobile">${String(row[2] || '')}</td>
+            <td><strong>${String(row[1] || '')}</strong></td>
+            <td><span class="invitados-badge">${String(row[3] || '0')}</span></td>
             <td>
               ${mensaje ? 
-                `<button class="btn-view-message" onclick="abrirModal(${idx})">
-                  Ver mensaje
+                `<button class="btn-view-message" onclick="abrirModal(${registroIndex})">
+                  <i data-feather="message-circle"></i> Ver
                 </button>` : 
-                '<span style="color: #9ca3af">Sin mensaje</span>'}
+                '<span style="color: #9ca3af; font-size: 0.85rem;">—</span>'}
+            </td>
+            <td style="text-align: center;">
+              <button class="btn-delete" onclick="confirmarEliminacion(${registroIndex})" title="Eliminar confirmación">
+                <i data-feather="trash-2"></i>
+              </button>
             </td>
           </tr>
         `;
       }).join('');
+      
+      feather.replace();
     }
 
     function abrirModal(index) {
       const row = registros[index];
-      document.getElementById('modalNombre').textContent = row[1] || 'N/A';
-      document.getElementById('modalTelefono').textContent = row[2] || 'N/A';
-      document.getElementById('modalFecha').textContent = row[0] || 'N/A';
-      document.getElementById('modalInvitados').textContent = row[3] || '0';
+      document.getElementById('modalNombre').textContent = String(row[1] || 'N/A');
+      document.getElementById('modalTelefono').textContent = String(row[2] || 'N/A');
+      document.getElementById('modalFecha').textContent = String(row[0] || 'N/A');
+      document.getElementById('modalInvitados').textContent = String(row[3] || '0');
       
-      const mensaje = row[4] || '';
+      const mensaje = String(row[4] || '');
       const mensajeElement = document.getElementById('modalMensaje');
       
       if (mensaje) {
@@ -597,8 +1088,16 @@
 
     window.onclick = function(event) {
       const modal = document.getElementById('messageModal');
+      const modalDup = document.getElementById('duplicatesModal');
+      const modalDel = document.getElementById('deleteModal');
       if (event.target == modal) {
         cerrarModal();
+      }
+      if (event.target == modalDup) {
+        cerrarModalDuplicados();
+      }
+      if (event.target == modalDel) {
+        cerrarModalEliminar();
       }
     }
 
@@ -669,26 +1168,73 @@
       });
     }
 
-    function exportarCSV() {
+    function exportarExcel() {
       if (registros.length === 0) {
         alert('No hay datos para exportar');
         return;
       }
 
-      let csv = 'Fecha y Hora,Nombre,Teléfono,Invitados,Mensaje\n';
+      // Preparar datos para Excel
+      const datosExcel = [
+        ['Fecha y Hora', 'Nombre', 'Teléfono', 'Invitados', 'Mensaje']
+      ];
+      
       registros.forEach(row => {
-        csv += `"${row[0]}","${row[1]}","${row[2]}","${row[3]}","${row[4] || ''}"\n`;
+        datosExcel.push([
+          String(row[0] || ''),      // Fecha y hora
+          String(row[1] || ''),      // Nombre
+          String(row[2] || ''),      // Teléfono
+          String(row[3] || '0'),     // Invitados
+          String(row[4] || '')       // Mensaje
+        ]);
       });
+      
+      // Agregar fila de totales
+      const totalInvitados = registros.reduce((sum, r) => sum + (parseInt(r[3]) || 0), 0);
+      datosExcel.push([]);
+      datosExcel.push([
+        'TOTALES',
+        '',
+        'Confirmaciones:',
+        registros.length,
+        ''
+      ]);
+      datosExcel.push([
+        '',
+        '',
+        'Total Invitados:',
+        totalInvitados,
+        ''
+      ]);
 
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `confirmaciones_${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      // Crear libro de Excel
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(datosExcel);
+      
+      // Ajustar ancho de columnas
+      ws['!cols'] = [
+        { wch: 18 },  // Fecha y Hora
+        { wch: 25 },  // Nombre
+        { wch: 15 },  // Teléfono
+        { wch: 10 },  // Invitados
+        { wch: 40 }   // Mensaje
+      ];
+      
+      // Aplicar estilo a encabezados (primera fila)
+      const headerStyle = {
+        font: { bold: true, color: { rgb: "FFFFFF" } },
+        fill: { fgColor: { rgb: "1a56db" } },
+        alignment: { horizontal: "center", vertical: "center" }
+      };
+      
+      // Agregar hoja al libro
+      XLSX.utils.book_append_sheet(wb, ws, 'Confirmaciones');
+      
+      // Descargar archivo
+      const fecha = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(wb, `Confirmaciones_Evento_${fecha}.xlsx`);
+      
+      mostrarNotificacion('📊 Excel descargado exitosamente', 'success');
     }
 
     document.getElementById('searchInput').addEventListener('input', renderTabla);
